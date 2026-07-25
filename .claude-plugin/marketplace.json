@@ -1,0 +1,15 @@
+{
+  "name": "doc-filing",
+  "version": "4.4.0",
+  "description": "Document Filing System v4.4 — universal, deterministic naming + filing standard for project docs.",
+  "author": {
+    "name": "Jeremy Longshore",
+    "email": "jeremy@intentsolutions.io"
+  },
+  "homepage": "https://github.com/intent-solutions-io/intent-doc-filing-solution",
+  "repository": "https://github.com/intent-solutions-io/intent-doc-filing-solution",
+  "license": "MIT",
+  "skills": [
+    "./skills/doc-filing/SKILL.md"
+  ]
+}

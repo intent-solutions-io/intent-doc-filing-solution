@@ -1,0 +1,33 @@
+# Node / Python build artifacts
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.pnp.*
+.yarn/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs / temp
+*.log
+.tmp/
+.cache/
+
+# Secrets — never commit, ever
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Local skill source mirror (live on author's box only)
+skills-mirror/

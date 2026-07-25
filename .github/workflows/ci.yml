@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-marketplace:
+    name: Validate marketplace + plugin manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse top-level marketplace.json
+        run: |
+          python3 -c "import json; json.load(open('.claude-plugin/marketplace.json'))"
+      - name: Parse plugin.json
+        run: |
+          python3 -c "import json; json.load(open('plugins/doc-filing/.claude-plugin/plugin.json'))"
+      - name: Verify skill path referenced exists
+        run: |
+          python3 -c "
+          import json, pathlib
+          m = json.load(open('.claude-plugin/marketplace.json'))
+          for s in m.get('skills', []):
+              p = pathlib.Path(s)
+              assert p.exists(), f'missing skill: {s}'
+              assert p.suffix == '.md', f'skill must be .md: {s}'
+          "
+
+  validate-skill-md:
+    name: Skill frontmatter lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required frontmatter fields present
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys, re
+          REQUIRED = {'name', 'description', 'allowed-tools', 'version', 'author', 'license', 'compatibility', 'tags'}
+          skill = pathlib.Path('plugins/doc-filing/skills/doc-filing/SKILL.md')
+          text = skill.read_text()
+          if not text.startswith('---'):
+              sys.exit('SKILL.md missing YAML frontmatter')
+          end = text.index('\n---', 3)
+          fm = text[3:end]
+          present = set(re.findall(r'^([a-zA-Z_-]+):', fm, re.M))
+          missing = REQUIRED - present
+          if missing:
+              sys.exit(f'missing frontmatter fields: {sorted(missing)}')
+          print('frontmatter OK; required fields:', sorted(REQUIRED))
+          PY
+
+  lint-md:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: |
+            *.md
+            000-docs/**/*.md
+
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

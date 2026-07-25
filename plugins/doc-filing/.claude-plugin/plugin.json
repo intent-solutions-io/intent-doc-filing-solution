@@ -1,0 +1,21 @@
+{
+  "name": "doc-filing",
+  "version": "4.4.0",
+  "description": "Document Filing System v4.4 — universal, deterministic naming + filing standard for project docs. Flat-by-default 000-docs/ with disciplined numbered nesting at scale, chronological sequencing, and category codes.",
+  "author": {
+    "name": "Jeremy Longshore",
+    "email": "jeremy@intentsolutions.io"
+  },
+  "homepage": "https://github.com/intent-solutions-io/intent-doc-filing-solution",
+  "repository": "https://github.com/intent-solutions-io/intent-doc-filing-solution",
+  "license": "MIT",
+  "keywords": [
+    "document-filing",
+    "doc-filing",
+    "filing-system",
+    "000-docs",
+    "project-documentation",
+    "claude-code",
+    "agent-skills"
+  ]
+}
