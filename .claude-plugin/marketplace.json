@@ -10,6 +10,6 @@
   "repository": "https://github.com/intent-solutions-io/intent-doc-filing-solution",
   "license": "MIT",
   "skills": [
-    "./skills/doc-filing/SKILL.md"
+    "./plugins/doc-filing/skills/doc-filing/SKILL.md"
   ]
 }

@@ -7,6 +7,13 @@ model: sonnet
 version: 4.4.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
+compatibility: "Claude Code (AgentSkills.io spec); tested on Sonnet, expected compatible with Haiku and Opus"
+tags:
+  - doc-filing
+  - document-organization
+  - 000-docs
+  - filing-standard
+  - project-documentation
 ---
 
 # Document Filing System v4.4 (LLM/AI-ASSISTANT FRIENDLY)
