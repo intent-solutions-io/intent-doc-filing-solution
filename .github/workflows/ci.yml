@@ -74,9 +74,18 @@ jobs:
     name: gitleaks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run gitleaks
+        # Direct Docker invocation. The `gitleaks/gitleaks-action@v2` requires a
+        # paid license for org-owned repos; running gitleaks directly avoids
+        # that gate while still using the upstream binary. Pinned to a known
+        # good release tag.
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/path" \
+            -w /path \
+            ghcr.io/gitleaks/gitleaks:v8.21.2 \
+            detect --redact --no-banner --source .

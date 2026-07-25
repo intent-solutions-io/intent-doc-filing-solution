@@ -12,6 +12,7 @@ governance files, worked examples) — not the standard itself.
 ## [Unreleased]
 
 ### Added
+
 - Initial public release of the Document Filing System v4.4 as a Claude Code
   marketplace plugin + standalone IS repo.
 - Vendored `doc-filing` skill (`plugins/doc-filing/skills/doc-filing/SKILL.md`)
@@ -21,5 +22,6 @@ governance files, worked examples) — not the standard itself.
 - CI: marketplace JSON validate + skill frontmatter lint + markdownlint + gitleaks.
 
 ### Notes
+
 - The repo applies doc-filing v4.4 to itself: `000-docs/000-DR-STND-intent-doc-filing-system.md`
   is the canonical "this standard in this repo" worked example.
