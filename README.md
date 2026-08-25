@@ -12,6 +12,8 @@ example (dogfooding).
 - **Standard reference**: `plugins/doc-filing/skills/doc-filing/references/000-DR-STND-document-filing-system.md`.
 - **License**: MIT. Author: Jeremy Longshore `<jeremy@intentsolutions.io>`.
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U5S225PTME)
+
 ## Install
 
 ```bash
