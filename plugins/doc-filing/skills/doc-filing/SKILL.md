@@ -80,9 +80,13 @@ At scale, `000-docs/` may hold one level of `NNN-CC-cluster-name/` folders. Alwa
 tree**, not just the top level — both to read current state and to compute the next global `NNN`.
 ```bash
 # Every filed doc, across the flat root AND every subfolder, in true chronological order:
-find 000-docs -type f -name '*.md' 2>/dev/null | sort
+find 000-docs -type f -name '*.md' | sort
 # Highest existing global NNN (shared across root + all subfolders):
-find 000-docs -type f -printf '%f\n' 2>/dev/null | grep -oE '^[0-9]{3}' | sort -n | tail -1
+# `sed 's#.*/##'` strips the directory, so the NNN stays anchored at line start. Do NOT use
+# `find -printf` here: it is a GNU findutils extension, absent from BSD/macOS find.
+# Errors are deliberately NOT sent to /dev/null: a missing or unreadable 000-docs/ must be
+# visible, because a suppressed failure is indistinguishable from an empty tree.
+find 000-docs -type f | sed 's#.*/##' | grep -oE '^[0-9]{3}' | sort -n | tail -1
 ```
 
 **Step 3: Scan for Loose Documents**
@@ -140,8 +144,19 @@ For each document found:
 # Get next sequence number — RECURSIVE scan of the whole tree (global NNN), NOT `ls` of one dir.
 # (Replaces the v4.3 `ls 000-docs/ | grep` one-liner, which only saw the top level and would
 #  collide once subfolders exist.)
-NEXT_NUM=$(printf "%03d" $(($(find 000-docs -type f -printf '%f\n' 2>/dev/null \
-  | grep -oE '^[0-9]{3}' | sort -n | tail -1) + 1)))
+# POSIX-portable: `sed 's#.*/##'` strips the directory so NNN stays anchored at line start.
+# `find -printf` is a GNU findutils extension and is NOT available in BSD/macOS find, where it
+# aborts with "unknown primary or operator", leaving the substitution empty.
+# Three failure modes this guards, all of which used to yield a silent, wrong 001:
+#   1. Scan failure  — a missing or unreadable 000-docs/ now fails loudly instead of being
+#      swallowed by 2>/dev/null and read as "empty tree".
+#   2. Octal parsing — NNN is zero-padded, and POSIX arithmetic reads a leading 0 as octal:
+#      $((047 + 1)) is 040, and $((008 + 1)) is a hard error, so filing stops at doc 007.
+#      The trailing `sed 's/^0*//'` forces base 10. (zsh masks this; bash and dash do not.)
+#   3. Empty tree    — `${HIGHEST:-0}` makes the genuinely-empty case 001, on purpose.
+FILED=$(find 000-docs -type f) || { echo "ERROR: cannot scan 000-docs/; refusing to compute NEXT_NUM" >&2; exit 1; }
+HIGHEST=$(printf '%s\n' "$FILED" | sed 's#.*/##' | grep -oE '^[0-9]{3}' | sort -n | tail -1 | sed 's/^0*//')
+NEXT_NUM=$(printf "%03d" $(( ${HIGHEST:-0} + 1 )))
 
 # Generate new name
 NEW_NAME="${NEXT_NUM}-${CATEGORY}-${DOC_TYPE}-${DESCRIPTION}.${EXTENSION}"
@@ -271,25 +286,26 @@ MISC, DRFT, ARCH, OLDV, WIPS, INDX
 **What is 000-* Series?**
 The 000-*-series represents **canonical, cross-repo reusable standards** (SOPs). These are global standards applied across multiple projects.
 
-**000-* Filename Pattern (v4.2 Rule):**
+**000-* Filename Pattern (v4.3+ Rule):**
 ```
-000-*-{a|b|c|...}-[TOPIC-]CC-ABCD-short-description.ext
+000-CC-ABCD-short-description.ext
 ```
 
 **Fields:**
-- `000-*`: fixed canonical prefix (used ONCE)
-- `{a|b|c|...}`: **mandatory letter suffix** for chronological ordering
-- `[TOPIC-]`: optional uppercase grouping prefix (e.g., INLINE, LAZY, SLKDEV)
-- `CC`: 2-letter category code
-- `ABCD`: 4-letter document type
+- `000`: fixed canonical prefix for cross-repo standards
+- `CC`: 2-letter category code (same table as the NNN series)
+- `ABCD`: 4-letter document type (same master tables)
 - `short-description`: 1-5 words, kebab-case
 
 **Examples:**
-- `000-*-a-DR-STND-document-filing-system-standard-v4.md`
-- `000-*-b-DR-INDEX-standards-catalog.md`
-- `000-*-c-INLINE-DR-STND-inline-source-deployment.md`
-- `000-*-DR-STND-...` (WRONG - missing letter suffix)
-- `000-*-000-DR-INDEX-...` (WRONG - numeric ID instead of letter)
+- `000-DR-STND-document-filing-system.md`
+- `000-DR-INDX-standards-catalog.md`
+- `000-TM-STND-secrets-handling.md`
+- `000-a-DR-STND-document-filing-system.md` (WRONG - no letter suffix needed)
+- `000-120-DR-INDEX-standards-catalog.md` (WRONG - no numeric ID after 000)
+
+Canonical `000-*` standards always live at the flat root of `000-docs/`, never nested.
+See section 1.3 of `{baseDir}/references/000-DR-STND-document-filing-system.md`.
 
 ## Pattern Matching Rules
 

@@ -411,9 +411,26 @@ When creating or renaming a document:
 2) **Compute the next `NNN` by a recursive scan of the whole tree** (not `ls` of one dir — the
    sequence is global across the flat root and every subfolder, never restarted per folder):
    ```bash
-   NEXT_NUM=$(printf "%03d" $(($(find 000-docs -type f -printf '%f\n' 2>/dev/null \
-     | grep -oE '^[0-9]{3}' | sort -n | tail -1) + 1)))
+   FILED=$(find 000-docs -type f) \
+     || { echo "ERROR: cannot scan 000-docs/; refusing to compute NEXT_NUM" >&2; exit 1; }
+   HIGHEST=$(printf '%s\n' "$FILED" \
+     | sed 's#.*/##' | grep -oE '^[0-9]{3}' | sort -n | tail -1 | sed 's/^0*//')
+   NEXT_NUM=$(printf "%03d" $(( ${HIGHEST:-0} + 1 )))
    ```
+   Three things this form is careful about, each of which otherwise produces a silent, wrong
+   `001` — the single most damaging failure available to this standard, since `001` collides
+   with an existing document and collapses the global sequence:
+   - **Portability.** `sed 's#.*/##'` strips the directory so `NNN` stays anchored at line
+     start. Do **not** use `find -printf '%f\n'`: it is a GNU findutils extension, absent from
+     BSD/macOS find, which aborts with `unknown primary or operator`.
+   - **No suppressed errors.** A missing or unreadable `000-docs/` must fail loudly. Behind
+     `2>/dev/null` it is indistinguishable from an empty tree, and both yield `001`.
+   - **Base 10, not octal.** `NNN` is zero-padded and POSIX arithmetic reads a leading `0` as
+     octal: `$((047 + 1))` is `040`, and `$((008 + 1))` is a hard error, so filing cannot pass
+     document `007`. The trailing `sed 's/^0*//'` forces base 10. Note `zsh` does not apply
+     octal parsing by default and so hides this; `bash` and `dash` do.
+
+   An empty `000-docs/` legitimately yields `001` via `${HIGHEST:-0}`.
 3) Pick `CC` from the Category table.
 4) Pick `ABCD` from the Type tables (do not invent).
 5) Create the filename using the exact pattern rules; keep the description short and kebab-case.
