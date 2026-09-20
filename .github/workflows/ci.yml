@@ -18,7 +18,7 @@ jobs:
     name: Validate marketplace + plugin manifests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Parse top-level marketplace.json
         run: |
           python3 -c "import json; json.load(open('.claude-plugin/marketplace.json'))"
@@ -40,7 +40,7 @@ jobs:
     name: Skill frontmatter lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Required frontmatter fields present
         run: |
           python3 - <<'PY'
@@ -63,8 +63,8 @@ jobs:
     name: Markdown lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: DavidAnson/markdownlint-cli2-action@v19
+      - uses: actions/checkout@v7
+      - uses: DavidAnson/markdownlint-cli2-action@v23
         with:
           globs: |
             *.md
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Run gitleaks
