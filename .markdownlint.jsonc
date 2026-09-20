@@ -2,5 +2,8 @@
   "default": true,
   "MD013": false,
   "MD040": false,
-  "MD041": false
+  "MD041": false,
+  // Added by markdownlint 0.40 (bundled with the action v23). It fights Prettier's table
+  // formatting; off across the estate.
+  "MD060": false
 }
