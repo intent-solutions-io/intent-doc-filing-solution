@@ -1,5 +1,11 @@
 # intent-doc-filing-solution
 
+<!-- intent-select-partner:start -->
+<p><a href="https://intentsolutions.io/"><img src="https://raw.githubusercontent.com/intent-solutions-io/.github/b82af5d3e7951d85e39ea9e65cc24ee8278722a7/assets/brand/claude-select-partner.svg" alt="Intent Solutions: Claude Partner Network Select Services Partner" width="300" height="95" /></a></p>
+
+Intent Solutions is a Claude Partner Network Select Services Partner.
+<!-- intent-select-partner:end -->
+
 **Document Filing System v4.4** — universal, deterministic naming + filing standard for project docs.
 
 Published as a [Claude Code](https://code.claude.com) marketplace plugin and as a standalone
